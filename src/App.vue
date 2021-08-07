@@ -11,18 +11,18 @@
     </ul>
   </div>
   <Note
-    v-if="isEdittable"
+    v-if="isEdittable()"
     :focusedId="editIndex"
     :content="notes[editIndex].content || ''"
     :title="notes[editIndex].title || ''"
-    :paramTitle="param1"
-    :paramContent="param2"
-    v-on:update:paramTitle="param1 = $event"
-    v-on:update:paramContent="param2 = $event"
+    :paramTitle="temporaryTitle"
+    :paramContent="temporaryContent"
+    v-on:update:paramTitle="updateTitle"
+    v-on:update:paramContent="updateContent"
     v-on:editnote="editNote"
   ></Note>
-    <button v-if="isEdittable" v-on:click="editIndex=-1" class="button-footer">Finish</button>
-    <button v-if="isEdittable" v-on:click="removeNote(editIndex)" class="button-footer">Delete</button>
+    <button v-if="isEdittable()" v-on:click="editIndex=-1" class="button-footer">Finish</button>
+    <button v-if="isEdittable()" v-on:click="removeNote(editIndex)" class="button-footer">Delete</button>
   </div>
 </template>
 
@@ -56,8 +56,8 @@ export default {
   methods: {
     addNewNote() {
       this.editIndex = this.notes.length ;
-      this.param1 = ''
-      this.param2 = ''
+      this.temporaryTitle = ''
+      this.temporaryContent = ''
       this.notes.push(
         {
           id: this.nextNoteId++,
@@ -69,14 +69,14 @@ export default {
     editNote() {
       this.notes.splice(this.editIndex, 1, {
         id: this.notes[this.editIndex].id,
-        title: this.param1,
-        content: this.param2,
+        title: this.temporaryTitle,
+        content: this.temporaryContent,
       });
       this.saveNotes()
     },
     setEditInfo(index) {
-      this.param1 = this.notes[index].title
-      this.param2 = this.notes[index].content
+      this.temporaryTitle = this.notes[index].title
+      this.temporaryContent = this.notes[index].content
       this.editIndex = index;
       this.targetNoteTitle = this.notes[index].title;
       this.targetNoteContent = this.notes[index].content;
@@ -92,7 +92,13 @@ export default {
     isEdittable() {
       const notEdittable = -1;
       return this.editIndex != notEdittable;
-    }
+    },
+    updateTitle(title) {
+      this.temporaryTitle = title;
+    },
+    updateContent(content) {
+      this.temporaryContent = content;
+    },
   },
 }
 </script>
