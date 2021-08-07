@@ -21,7 +21,7 @@ export default {
         return this.title;
       },
       set(title) {
-        this.$emit("update:paramtitle", title);
+        this.$emit("update:paramTitle", title);
         this.$emit('editnote')
       },
     },
@@ -30,7 +30,7 @@ export default {
         return this.content;
       },
       set(content) {
-        this.$emit("update:paramcontent", content);
+        this.$emit("update:paramContent", content);
         this.$emit('editnote')
       },
     },

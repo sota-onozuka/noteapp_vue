@@ -11,18 +11,18 @@
     </ul>
   </div>
   <Note
-    v-if="editIndex != -1"
+    v-if="isEdittable"
     :focusedId="editIndex"
     :content="notes[editIndex].content || ''"
     :title="notes[editIndex].title || ''"
-    :paramtitle="param1"
-    :paramcontent="param2"
-    v-on:update:paramtitle="param1 = $event"
-    v-on:update:paramcontent="param2 = $event"
+    :paramTitle="param1"
+    :paramContent="param2"
+    v-on:update:paramTitle="param1 = $event"
+    v-on:update:paramContent="param2 = $event"
     v-on:editnote="editNote"
   ></Note>
-    <button v-if="editIndex != -1" v-on:click="editIndex=-1" class="button-footer">Finish</button>
-    <button v-if="editIndex != -1" v-on:click="removeNote(editIndex)" class="button-footer">Delete</button>
+    <button v-if="isEdittable" v-on:click="editIndex=-1" class="button-footer">Finish</button>
+    <button v-if="isEdittable" v-on:click="removeNote(editIndex)" class="button-footer">Delete</button>
   </div>
 </template>
 
@@ -35,25 +35,22 @@ export default {
   },
   data() {
     return {
-    targetNoteContent: '',
-    targetNoteTitle: '',
-    editIndex: -1,
-    notes: [
-    ],
-    nextNoteId: 0,
-    param1: '',
-    param2: '',
+      targetNoteContent: '',
+      targetNoteTitle: '',
+      editIndex: -1,
+      notes: [
+      ],
+      nextNoteId: 0,
     }
   },
   props: ['note'],
   mounted() {
     this.notes = JSON.parse(localStorage.getItem('access_notes')) || [];
-    var ids = [];
+    const ids = [];
     for (const note of this.notes){
       ids.push(note.id);
     }
-    const aryMax = function (a, b) {return Math.max(a, b);}
-    let maxId = ids.reduce(aryMax);
+    let maxId = Math.max(...ids);
     this.nextNoteId = maxId + 1;
   },
   methods: {
@@ -92,16 +89,16 @@ export default {
     saveNotes() {
       localStorage.setItem('access_notes', JSON.stringify(this.notes));
     },
-    resetInfo() {
-      this.targetNoteContent = '';
-      this.editIndex = -1;
-    },
     saveState() {
       this.notes.splice(this.editIndex, 1, {
         id: this.editIndex,
         title: this.param1,
         content: this.param2,
       });
+    },
+    isEdittable() {
+      const notEdittable = -1;
+      return this.editIndex != notEdittable;
     }
   },
 }
