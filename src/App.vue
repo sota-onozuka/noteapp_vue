@@ -38,33 +38,31 @@ export default {
       targetNoteContent: '',
       targetNoteTitle: '',
       editIndex: -1,
-      notes: [
-      ],
-      nextNoteId: 0,
+      notes: [],
     }
   },
-  props: ['note'],
   mounted() {
     this.notes = JSON.parse(localStorage.getItem('access_notes')) || [];
-    const ids = [];
-    for (const note of this.notes){
-      ids.push(note.id);
-    }
-    let maxId = Math.max(...ids);
-    this.nextNoteId = maxId + 1;
+  },
+  computed: {
   },
   methods: {
     addNewNote() {
-      this.editIndex = this.notes.length ;
-      this.temporaryTitle = ''
-      this.temporaryContent = ''
+      this.editIndex = this.notes.length;
+      this.temporaryTitle = '';
+      this.temporaryContent = '';
+      console.log(this.setNextNoteId());
       this.notes.push(
         {
-          id: this.nextNoteId++,
+          id: this.setNextNoteId(),
           title: '',
           content: '',
         });
-      this.saveNotes()
+      this.saveNotes();
+    },
+    setNextNoteId() {
+      const ids = this.notes.map(x => x.id);
+      return Math.max(...ids) + 1;
     },
     editNote() {
       this.notes.splice(this.editIndex, 1, {
