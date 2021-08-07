@@ -89,13 +89,6 @@ export default {
     saveNotes() {
       localStorage.setItem('access_notes', JSON.stringify(this.notes));
     },
-    saveState() {
-      this.notes.splice(this.editIndex, 1, {
-        id: this.editIndex,
-        title: this.param1,
-        content: this.param2,
-      });
-    },
     isEdittable() {
       const notEdittable = -1;
       return this.editIndex != notEdittable;
