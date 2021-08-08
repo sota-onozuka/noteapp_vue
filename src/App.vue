@@ -1,33 +1,49 @@
 <template>
-<div>
-  <button v-on:click="addNewNote" class="new-button">Take a new note</button>
-  <div class="notes-area">
-    <ul class="notes">
-      <li v-for="(note, index) in notes" :key= "note.id" class="note">
-        <p class="title">{{note.title}}</p>
-        <button v-on:click="setEditInfo(index)" class="show-button">Show</button>
-        <button v-on:click="removeNote(index)" class="delete-button">Delete</button>
-      </li>
-    </ul>
-  </div>
-  <Note
-    v-if="isEdittable()"
-    :focusedId="editIndex"
-    :content="notes[editIndex].content || ''"
-    :title="notes[editIndex].title || ''"
-    :paramTitle="temporaryTitle"
-    :paramContent="temporaryContent"
-    v-on:update:paramTitle="updateTitle"
-    v-on:update:paramContent="updateContent"
-    v-on:editnote="editNote"
-  ></Note>
-    <button v-if="isEdittable()" v-on:click="editIndex=-1" class="button-footer">Finish</button>
-    <button v-if="isEdittable()" v-on:click="removeNote(editIndex)" class="button-footer">Delete</button>
+  <div>
+    <button v-on:click="addNewNote" class="new-button">Take a new note</button>
+    <div class="notes-area">
+      <ul class="notes">
+        <li v-for="(note, index) in notes" :key="note.id" class="note">
+          <p class="title">{{ note.title }}</p>
+          <button v-on:click="setEditInfo(index)" class="show-button">
+            Show
+          </button>
+          <button v-on:click="removeNote(index)" class="delete-button">
+            Delete
+          </button>
+        </li>
+      </ul>
+    </div>
+    <Note
+      v-if="isEdittable()"
+      :focusedId="editIndex"
+      :content="notes[editIndex].content || ''"
+      :title="notes[editIndex].title || ''"
+      :paramTitle="temporaryTitle"
+      :paramContent="temporaryContent"
+      v-on:update:paramTitle="updateTitle"
+      v-on:update:paramContent="updateContent"
+      v-on:editnote="editNote"
+    ></Note>
+    <button
+      v-if="isEdittable()"
+      v-on:click="finishEdit()"
+      class="button-footer"
+    >
+      Finish
+    </button>
+    <button
+      v-if="isEdittable()"
+      v-on:click="removeNote(editIndex)"
+      class="button-footer"
+    >
+      Delete
+    </button>
   </div>
 </template>
 
 <script>
-import Note from "./components/Note.vue";
+import Note from './components/Note.vue';
 export default {
   name: 'App',
   components: {
@@ -39,29 +55,27 @@ export default {
       targetNoteTitle: '',
       editIndex: -1,
       notes: [],
-    }
+    };
   },
   mounted() {
     this.notes = JSON.parse(localStorage.getItem('access_notes')) || [];
   },
-  computed: {
-  },
+  computed: {},
   methods: {
     addNewNote() {
       this.editIndex = this.notes.length;
       this.temporaryTitle = '';
       this.temporaryContent = '';
-      console.log(this.setNextNoteId());
-      this.notes.push(
-        {
-          id: this.setNextNoteId(),
-          title: '',
-          content: '',
-        });
+      this.notes.push({
+        id: this.setNextNoteId(),
+        title: '',
+        content: '',
+      });
       this.saveNotes();
     },
     setNextNoteId() {
-      const ids = this.notes.map(x => x.id);
+      if (this.notes.length == 0) return 0;
+      const ids = this.notes.map((x) => x.id);
       return Math.max(...ids) + 1;
     },
     editNote() {
@@ -70,11 +84,11 @@ export default {
         title: this.temporaryTitle,
         content: this.temporaryContent,
       });
-      this.saveNotes()
+      this.saveNotes();
     },
     setEditInfo(index) {
-      this.temporaryTitle = this.notes[index].title
-      this.temporaryContent = this.notes[index].content
+      this.temporaryTitle = this.notes[index].title;
+      this.temporaryContent = this.notes[index].content;
       this.editIndex = index;
       this.targetNoteTitle = this.notes[index].title;
       this.targetNoteContent = this.notes[index].content;
@@ -91,14 +105,20 @@ export default {
       const notEdittable = -1;
       return this.editIndex != notEdittable;
     },
+    finishEdit() {
+      const notEdittable = -1;
+      return (this.editIndex = notEdittable);
+    },
     updateTitle(title) {
       this.temporaryTitle = title;
+      this.editNote();
     },
     updateContent(content) {
       this.temporaryContent = content;
+      this.editNote();
     },
   },
-}
+};
 </script>
 
 <style>
@@ -109,9 +129,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-  font-family: "游ゴシック体", "YuGothic", "游ゴシック", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", "Meiryo", sans-serif;
+  font-family: '游ゴシック体', 'YuGothic', '游ゴシック', 'Yu Gothic',
+    'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo',
+    sans-serif;
 }
-.notes-area{
+.notes-area {
   height: 300px;
   width: 60%;
   margin-left: auto;
@@ -120,8 +142,7 @@ export default {
   margin-bottom: 10px;
   overflow-y: scroll;
 }
-.note 
-{
+.note {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -140,38 +161,40 @@ button {
   padding-right: 10px;
   font-size: 15px;
   border-radius: 3px;
-  background:#383838;
-  color:#fff;
-  border:none;
-  position:relative;
-  cursor:pointer;
-  transition:800ms ease all;
-  outline:none;
+  background: #383838;
+  color: #fff;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  transition: 800ms ease all;
+  outline: none;
 }
 /* かっこいいボタンデザイン(コピー) */
-button:hover{
-  background:#fff;
-  color:#383838;
+button:hover {
+  background: #fff;
+  color: #383838;
 }
-button:before, button:after{
-  content:'';
-  position:absolute;
-  top:0;
-  right:0;
-  height:2px;
-  width:0;
+button:before,
+button:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 2px;
+  width: 0;
   background: #383838;
-  transition:400ms ease all;
+  transition: 400ms ease all;
 }
-button:after{
-  right:inherit;
-  top:inherit;
-  left:0;
-  bottom:0;
+button:after {
+  right: inherit;
+  top: inherit;
+  left: 0;
+  bottom: 0;
 }
-button:hover:before, button:hover:after{
-  width:100%;
-  transition:800ms ease all;
+button:hover:before,
+button:hover:after {
+  width: 100%;
+  transition: 800ms ease all;
 }
 /* かっこいいボタンデザイン終わり */
 button.show-button {
